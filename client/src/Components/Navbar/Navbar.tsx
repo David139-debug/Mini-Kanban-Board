@@ -37,7 +37,6 @@ const Navbar = () => {
               style={{ fontFamily: "Plus Jakarta Sans" }}>Project PlanetX</p>
           </div>
       </article>
-
       <article className="flex gap-2 items-center">
         <div className="mr-4">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
