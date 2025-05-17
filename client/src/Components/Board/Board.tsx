@@ -7,11 +7,12 @@ import ToDo from "./Columns/ToDo"
 import { useState, useEffect, useReducer } from "react";
 import axios from "axios"
 import type { Task } from "./taskReducer"
-import { DndContext, DragOverlay, type DragEndEvent } from "@dnd-kit/core"
+import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core"
 import { taskReducer } from "./taskReducer"
 import { SortableContext } from "@dnd-kit/sortable"
 import DraggableTask from "./Columns/Tasks/DraggableTask"
 import NewTask from "./NewTaskModal/NewTask"
+import PhoneNavbar from "../Navbar/PhoneNavbar"
 
 const Board = () => {
 
@@ -45,11 +46,23 @@ const Board = () => {
     fetchTasks();
   }, []);
 
+  useEffect(() => {
+    if (openModal) {
+      document.body.style.overflowY = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    }
+  }, [openModal])
+
   const todoTasks = tasks.filter((task) => task.status === "todo");
   const progressTasks = tasks.filter((task) => task.status === "inProgress");
   const completedTasks = tasks.filter((task) => task.status === "done");
 
-  const handleDragStart = ({ active }: any) => {
+  const handleDragStart = ({ active }: DragStartEvent) => {
     const draggedTask = tasks.find((task) => task.id === active.id);
     setActiveTask(draggedTask || null);
   };
@@ -72,15 +85,21 @@ const Board = () => {
     <section className="flex">
       <Sidebar />
         <div className="flex flex-col w-full">
+        <div className=" lg:hidden">
+          <PhoneNavbar />
+        </div>
             <Navbar />
-            <ProjectInfo />
+            <ProjectInfo tasks={tasks} />
 
         <article className="justify-center flex flex-wrap gap-6 p-8 
                     flex-col 
                     md:flex-row md:flex-wrap 
                     lg:flex-nowrap">
           {openModal && (
-            <NewTask setOpenModal={setOpenModal} />
+            <>
+              <div className="fixed inset-0 bg-[rgba(8,8,8,0.8)] z-50 pointer-events-auto"></div>
+              <NewTask dispatch={dispatch} setOpenModal={setOpenModal} />
+            </>
           )}
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <SortableContext items={todoTasks.map(task => task.id)}>

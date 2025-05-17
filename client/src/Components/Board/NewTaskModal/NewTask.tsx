@@ -1,10 +1,62 @@
+import { type Dispatch } from "react";
+import { type Action } from "../taskReducer";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
 interface ModalState {
-    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setOpenModal: Dispatch<React.SetStateAction<boolean>>;
+    dispatch: Dispatch<Action>;
 }
 
-const NewTask = ({ setOpenModal }: ModalState) => {
+export type Status = "todo" | "inProgress" | "done";
+
+interface FormState {
+    name: string;
+    status?: Status
+}
+
+const schema: yup.ObjectSchema<FormState> = yup.object({
+    name: yup
+        .string()
+        .required("Task name is required.")
+        .min(3, "Task name must be at least 3 characters"),
+    
+    status: yup
+        .mixed<Status>()
+        .oneOf(["todo", "inProgress", "done"])
+});
+
+const NewTask = ({ setOpenModal, dispatch }: ModalState) => {
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<FormState>({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            name: "",
+            status: "todo",
+        }
+    })
+
+    const onSubmit = (data: FormState) => {
+        dispatch({ 
+            type: "ADD_TASK",
+            payload: {
+                title: data.name,
+                newStatus: data.status ?? "todo",
+                completed: false
+            }
+        });
+        reset();
+        setOpenModal(false);
+    };
+
   return (
-      <form style={{
+      <form onSubmit={handleSubmit(onSubmit)} style={{
           boxShadow: "0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)"
 }} className="bg-white p-6 rounded-[32px] absolute z-50 flex flex-col gap-6">
         <div className="flex flex-col gap-8">
@@ -25,20 +77,22 @@ const NewTask = ({ setOpenModal }: ModalState) => {
               <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-2">
                       <label className="text-[#1E293B] font-bold text-sm">TaskName</label>
-                      <input className="p-3 border rounded-full border-[#CBD5E1] placeholder-[#475569] font-medium" placeholder="Enter name" type="text" />
+                      <input { ...register("name") } className="p-3 border rounded-full border-[#CBD5E1] placeholder-[#475569] font-medium" placeholder="Enter name" type="text" />
+                      {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
                   </div>
                   <div className="flex flex-col gap-2">
                       <label className="text-[#1E293B] font-bold text-sm">Task Status</label>
-                      <select className="p-3 border border-[#CBD5E1] rounded-full placeholder-[#475569] font-medium" name="">
-                          <option value="">To Do</option>
-                          <option value="">In Progress</option>
+                      <select { ...register("status") } name="status" className="p-3 border border-[#CBD5E1] rounded-full placeholder-[#475569] font-medium">
+                          <option value="todo">To Do</option>
+                          <option value="inProgress">In Progress</option>
+                          <option value="done">Completed</option>
                       </select>
                   </div>
               </div>
 
               <div className="flex gap-2 justify-end">
                   <button onClick={() => setOpenModal(false)} className="cursor-pointer border rounded-full font-bold border-[#CBD5E1] py-2.5 px-4">Cancel</button>
-                  <button className="cursor-pointer bg-[#4F46E5] text-white font-bold border rounded-full border-[#CBD5E1] py-2.5 px-4">Add</button>
+                  <button type="submit" className="cursor-pointer bg-[#4F46E5] text-white font-bold border rounded-full border-[#CBD5E1] py-2.5 px-4">Add</button>
               </div>
         </div>
     </form>

@@ -1,12 +1,18 @@
-const SearchOptions = () => {
+import { type Task } from "../Board/taskReducer"
+
+type Prop = {
+    tasks: Task[]
+}
+
+const SearchOptions = ({ tasks }: Prop) => {
   return (
-    <article className='border-b-2 border-[#CBD5E1] w-full items-center flex flex-col gap-4 min-[915px]:hidden'>
+    <article className='w-full items-start flex flex-col gap-4 min-[915px]:hidden'>
       <svg className="p-2.5 rounded-full bg-[#E0E7FF]" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
         <path d="M64 32C64 23.5131 60.6286 15.3737 54.6274 9.37258C48.6263 3.37142 40.4869 6.40745e-07 32 0C23.5131 -6.40745e-07 15.3738 3.37142 9.37259 9.37258C3.37142 15.3737 1.28149e-06 23.5131 0 32L32 32H64Z" fill="#818CF8" />
         <path d="M0 32C-7.41951e-07 40.4869 3.37142 48.6263 9.37258 54.6274C15.3737 60.6286 23.5131 64 32 64C40.4869 64 48.6263 60.6286 54.6274 54.6274C60.6286 48.6263 64 40.4869 64 32L32 32L0 32Z" fill="#4F46E5" />
       </svg>
 
-      <div className="flex justify-between gap-4 max-[915px]:flex-col items-center">
+      <div className="flex justify-between gap-4 max-[915px]:flex-col">
         <p className="text-[#1E293B] font-bold text-3xl">Project PlanetX</p>
         
         <div className="flex gap-5">
@@ -31,11 +37,14 @@ const SearchOptions = () => {
         </div>
 
         <div className="flex">
-          <div className="flex justify-center items-center py-3 px-4 min-h-[45px]">
+          <div className="border-b-2 border-[#CBD5E1] flex justify-center items-center py-3 px-4 min-h-[45px]">
             <p style={{ fontFamily: "Plus Jakarta Sans" }} className="font-bold text-base text-[#475569]">By Status</p>
           </div>
-          <div className="flex justify-center items-center py-3 px-4 min-h-[45px]">
-            <p style={{ fontFamily: "Plus Jakarta Sans" }} className="font-bold text-base text-[#475569]">By Total Tasks</p> <span></span>
+          <div className="flex border-b-2 border-[#4F46E5] gap-2.5 justify-center items-center py-3 px-4 min-h-[45px]">
+            <p style={{ fontFamily: "Plus Jakarta Sans" }} className="font-bold text-base text-[#1E293B]">By Total Tasks</p> <div className="bg-[#EEF2FF] font-bold border border-[#A5B4FC] rounded-full py-1 px-2 text-[#4F46E5]">{tasks.length}</div>
+          </div>
+          <div className="border-b-2 border-[#CBD5E1] flex justify-center items-center py-3 px-4 min-h-[45px]">
+            <p style={{ fontFamily: "Plus Jakarta Sans" }} className="font-bold text-base text-[#475569]">Task Due</p>
           </div>
         </div>
       </div>

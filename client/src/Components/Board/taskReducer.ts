@@ -1,4 +1,4 @@
-type Status = "todo" | "inProgress" | "done";
+import type { Status } from "./NewTaskModal/NewTask";
 
 export interface Task {
     id: number;
@@ -15,7 +15,7 @@ export interface OpenModal {
 export type Action =
     | { type: "GET_TASKS", payload: { tasks: Task[] } }
     | { type: "MOVE_TASK", payload: { taskId: number, newStatus: "todo" | "inProgress" | "done"} }
-    | { type: "ADD_TASK", payload: { title: string, newStatus: "todo", completed: false  } }
+    | { type: "ADD_TASK", payload: { title: string, newStatus: Status, completed: false  } }
 
 export const taskReducer = (state: Task[], action: Action): Task[] => {
     switch (action.type) {
