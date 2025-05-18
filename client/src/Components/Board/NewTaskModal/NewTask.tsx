@@ -3,10 +3,13 @@ import { type Action } from "../taskReducer";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import axios from "axios";
+import { v4 as uuid } from "uuid";
 
 interface ModalState {
     setOpenModal: Dispatch<React.SetStateAction<boolean>>;
     dispatch: Dispatch<Action>;
+    status: Status;
 }
 
 export type Status = "todo" | "inProgress" | "done";
@@ -27,7 +30,7 @@ const schema: yup.ObjectSchema<FormState> = yup.object({
         .oneOf(["todo", "inProgress", "done"])
 });
 
-const NewTask = ({ setOpenModal, dispatch }: ModalState) => {
+const NewTask = ({ setOpenModal, dispatch, status }: ModalState) => {
 
     const {
         register,
@@ -38,21 +41,35 @@ const NewTask = ({ setOpenModal, dispatch }: ModalState) => {
         resolver: yupResolver(schema),
         defaultValues: {
             name: "",
-            status: "todo",
+            status: status,
         }
-    })
+    });
 
-    const onSubmit = (data: FormState) => {
-        dispatch({ 
-            type: "ADD_TASK",
-            payload: {
+    const onSubmit = async (data: FormState) => {
+        try {
+            const generatedId = uuid();
+
+            await axios.post("http://localhost:5000/api/createTask", {
                 title: data.name,
-                newStatus: data.status ?? "todo",
-                completed: false
-            }
-        });
-        reset();
-        setOpenModal(false);
+                status: data.status,
+                completed: data.status === "done" ? true : false,
+                id: generatedId
+            });
+            dispatch({
+                type: "ADD_TASK",
+                payload: {
+                    id: generatedId,
+                    title: data.name,
+                    newStatus: data.status || "todo",
+                    completed: data.status === "done" ? true : false 
+                }
+            });
+            reset();
+            setOpenModal(false);
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
     };
 
   return (

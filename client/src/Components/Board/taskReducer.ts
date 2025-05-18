@@ -1,8 +1,7 @@
 import type { Status } from "./NewTaskModal/NewTask";
 
 export interface Task {
-    id: number;
-    userId: number;
+    id: string;
     title: string;
     completed: boolean;
     status: Status;
@@ -14,8 +13,8 @@ export interface OpenModal {
 
 export type Action =
     | { type: "GET_TASKS", payload: { tasks: Task[] } }
-    | { type: "MOVE_TASK", payload: { taskId: number, newStatus: "todo" | "inProgress" | "done"} }
-    | { type: "ADD_TASK", payload: { title: string, newStatus: Status, completed: false  } }
+    | { type: "MOVE_TASK", payload: { taskId: string, newStatus: "todo" | "inProgress" | "done"} }
+    | { type: "ADD_TASK", payload: { id: string, title: string, newStatus: Status, completed: false | true  } }
 
 export const taskReducer = (state: Task[], action: Action): Task[] => {
     switch (action.type) {
@@ -28,18 +27,17 @@ export const taskReducer = (state: Task[], action: Action): Task[] => {
                 { ...task, status: action.payload.newStatus }
                 : task
             )
-        
+
         case "ADD_TASK":
-            const newId = state.length > 0 ? Math.max(...state.map(task => task.id)) + 1 : 1;
             const newTask: Task = {
-                id: newId,
-                userId: 1,
+                id: action.payload.id,
                 title: action.payload.title,
                 completed: action.payload.completed,
                 status: action.payload.newStatus
             };
             return [...state, newTask];
 
-        default: return state
+        default: 
+            return state
     }
 }
