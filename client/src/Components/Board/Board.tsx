@@ -13,6 +13,7 @@ import { SortableContext } from "@dnd-kit/sortable"
 import DraggableTask from "./Columns/Tasks/DraggableTask"
 import NewTask, { type Status } from "./NewTaskModal/NewTask"
 import PhoneNavbar from "../Navbar/PhoneNavbar"
+import Edit from "./EditModal/Edit"
 
 const Board = () => {
 
@@ -20,6 +21,7 @@ const Board = () => {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [status, setStatus] = useState<Status>("todo");
+  const [editModal, setEditModal] = useState<{ open: boolean; id: string | null }>({ open: false, id: "" });
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -64,7 +66,6 @@ const Board = () => {
     } else {
       document.body.style.overflow = "auto"
     }
-
     return () => {
       document.body.style.overflow = "auto";
     }
@@ -116,6 +117,12 @@ const handleDragEnd = async (e: DragEndEvent) => {
                     flex-col 
                     md:flex-row md:flex-wrap 
                     lg:flex-nowrap">
+          {editModal.open && (
+            <>
+              <div className="fixed inset-0 bg-[rgba(8,8,8,0.8)] z-50 pointer-events-auto"></div>
+              <Edit id={editModal.id} setEditModal={setEditModal} dispatch={dispatch} setOpenModal={setOpenModal} />
+            </>
+          )}
           {openModal && (
             <>
               <div className="fixed inset-0 bg-[rgba(8,8,8,0.8)] z-50 pointer-events-auto"></div>
@@ -124,16 +131,16 @@ const handleDragEnd = async (e: DragEndEvent) => {
           )}
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <SortableContext items={todoTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><ToDo setStatus={setStatus} setOpenModal={setOpenModal} todoTasks={todoTasks} /></div>
+              <div className="flex-1 min-w-[300px]"><ToDo setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} todoTasks={todoTasks} /></div>
             </SortableContext>
             <SortableContext items={progressTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><InProgress setStatus={setStatus} setOpenModal={setOpenModal} progressTasks={progressTasks} /></div>
+              <div className="flex-1 min-w-[300px]"><InProgress setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} progressTasks={progressTasks} /></div>
             </SortableContext>
             <SortableContext items={completedTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><Completed setStatus={setStatus} setOpenModal={setOpenModal} completedTasks={completedTasks} /></div>
+              <div className="flex-1 min-w-[300px]"><Completed setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} completedTasks={completedTasks} /></div>
             </SortableContext>
             <DragOverlay>
-              {activeTask ? <DraggableTask task={activeTask} /> : null}
+              {activeTask ? <DraggableTask setEditModal={setEditModal} task={activeTask} dispatch={dispatch} /> : null}
             </DragOverlay>
           </DndContext>
         </article>

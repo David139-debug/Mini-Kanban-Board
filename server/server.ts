@@ -6,6 +6,8 @@ import dotenv from "dotenv"
 import createTaskRoute from "./routes/createTask";
 import getTasksRoute from "./routes/getTasks";
 import updateTaskRoute from "./routes/updateTask";
+import deleteTaskRoute from "./routes/deleteTask";
+import editTaskRoute from "./routes/editTask"
 dotenv.config();
 const PORT = process.env.PORT;
 const corsOptions = {
@@ -20,6 +22,8 @@ app.use(cors(corsOptions));
 app.use("/api/createTask", createTaskRoute);
 app.use("/api/getTasks", getTasksRoute);
 app.use("/api/updateTask", updateTaskRoute);
+app.use("/api/deleteTask", deleteTaskRoute);
+app.use("/api/editTask", editTaskRoute);
 
 mongoose.connection.once("open", () => {
     app.listen(PORT, () => {

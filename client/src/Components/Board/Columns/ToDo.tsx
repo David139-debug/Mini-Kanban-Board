@@ -1,16 +1,18 @@
 import { useDroppable } from "@dnd-kit/core";
-import type { Task } from "../taskReducer";
+import type { Action, Task } from "../taskReducer";
 import DraggableTask from "./Tasks/DraggableTask";
-import { useEffect } from "react";
+import { useEffect, type Dispatch } from "react";
 import type { Status } from "../NewTaskModal/NewTask";
 
 interface TodoProps {
     todoTasks: Task[];
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setEditModal: Dispatch<React.SetStateAction<{ open: boolean; id: string | null }>>;
     setStatus: React.Dispatch<React.SetStateAction<Status>>
+    dispatch: Dispatch<Action>
 }
 
-const ToDo = ({ todoTasks, setOpenModal, setStatus }: TodoProps) => {
+const ToDo = ({ todoTasks, setOpenModal, setStatus, dispatch, setEditModal }: TodoProps) => {
     
     const { setNodeRef } = useDroppable({
         id: "todo"
@@ -43,7 +45,7 @@ const ToDo = ({ todoTasks, setOpenModal, setStatus }: TodoProps) => {
                   {todoTasks.length === 0 ? (
                       <p className="text-[#94A3B8] text-sm">Drag Task here.</p>
                   ) : (
-                      todoTasks.map((task) => <DraggableTask key={task.id} task={task} />)
+                      todoTasks.map((task) => <DraggableTask setEditModal={setEditModal} dispatch={dispatch} key={task.id} task={task} />)
                   )}
               </div>
           </div>

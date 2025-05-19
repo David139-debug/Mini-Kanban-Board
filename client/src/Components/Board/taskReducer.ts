@@ -15,6 +15,8 @@ export type Action =
     | { type: "GET_TASKS", payload: { tasks: Task[] } }
     | { type: "MOVE_TASK", payload: { taskId: string, newStatus: "todo" | "inProgress" | "done"} }
     | { type: "ADD_TASK", payload: { id: string, title: string, newStatus: Status, completed: false | true  } }
+    | { type: "DELETE_TASK", payload: { id: string } }
+    | { type: "EDIT_TASK", payload: { title: string, id: string } }
 
 export const taskReducer = (state: Task[], action: Action): Task[] => {
     switch (action.type) {
@@ -36,6 +38,16 @@ export const taskReducer = (state: Task[], action: Action): Task[] => {
                 status: action.payload.newStatus
             };
             return [...state, newTask];
+
+        case "EDIT_TASK":
+            return state.map(task => task.id === action.payload.id
+                ? { ...task, title: action.payload.title }
+                : task
+            );
+            
+
+        case "DELETE_TASK":
+           return state.filter(task => task.id !== action.payload.id);
 
         default: 
             return state
