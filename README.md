@@ -4,6 +4,9 @@
 * TypeScript, React, Tailwind CSS
 * Node.js, Express, MongoDB
 
+# Guardirana Ruta
+* potrebno je upisati /settings u url kako bi došli do nje
+
 ## Setup
 * Front-End
 ```bash
