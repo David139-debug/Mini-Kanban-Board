@@ -5,7 +5,7 @@ import Completed from "./Columns/Completed"
 import InProgress from "./Columns/InProgress"
 import ToDo from "./Columns/ToDo"
 import { useState, useEffect, useReducer } from "react";
-import axios from "axios"
+import api from "../../api"
 import type { Task } from "./taskReducer"
 import { DndContext, DragOverlay, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core"
 import { taskReducer } from "./taskReducer"
@@ -43,7 +43,7 @@ const Board = () => {
         })); */
         
         //Fetchanje preko mojeg backenda
-        let response = await axios.get<Task[]>("http://localhost:5000/api/getTasks");
+        let response = await api.get<Task[]>("http://localhost:5000/api/getTasks");
         let data = response.data;
         const myTasks = data.map((task): Task => ({
           title: task.title,
@@ -69,7 +69,7 @@ const Board = () => {
     return () => {
       document.body.style.overflow = "auto";
     }
-  }, [openModal])
+  }, [openModal]);
 
   const todoTasks = tasks.filter((task) => task.status === "todo");
   const progressTasks = tasks.filter((task) => task.status === "inProgress");
@@ -94,7 +94,7 @@ const handleDragEnd = async (e: DragEndEvent) => {
     });
 
     try {
-        await axios.put(`http://localhost:5000/api/updateTask/`, {
+      await api.put(`http://localhost:5000/api/updateTask/`, {
           id: taskId,
           status: newStatus,
         });
@@ -113,10 +113,7 @@ const handleDragEnd = async (e: DragEndEvent) => {
             <Navbar />
             <ProjectInfo tasks={tasks} />
 
-        <article className="justify-center flex flex-wrap gap-6 p-8 
-                    flex-col 
-                    md:flex-row md:flex-wrap 
-                    lg:flex-nowrap">
+        <article className="board-grid gap-6 p-8">
           {editModal.open && (
             <>
               <div className="fixed inset-0 bg-[rgba(8,8,8,0.8)] z-50 pointer-events-auto"></div>
@@ -131,13 +128,13 @@ const handleDragEnd = async (e: DragEndEvent) => {
           )}
           <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <SortableContext items={todoTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><ToDo setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} todoTasks={todoTasks} /></div>
+              <div className=""><ToDo setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} todoTasks={todoTasks} /></div>
             </SortableContext>
             <SortableContext items={progressTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><InProgress setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} progressTasks={progressTasks} /></div>
+              <div className=""><InProgress setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} progressTasks={progressTasks} /></div>
             </SortableContext>
             <SortableContext items={completedTasks.map(task => task.id)}>
-              <div className="flex-1 min-w-[300px]"><Completed setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} completedTasks={completedTasks} /></div>
+              <div className=""><Completed setEditModal={setEditModal} dispatch={dispatch} setStatus={setStatus} setOpenModal={setOpenModal} completedTasks={completedTasks} /></div>
             </SortableContext>
             <DragOverlay>
               {activeTask ? <DraggableTask setEditModal={setEditModal} task={activeTask} dispatch={dispatch} /> : null}

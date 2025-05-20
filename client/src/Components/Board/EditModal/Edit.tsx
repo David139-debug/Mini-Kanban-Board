@@ -3,7 +3,7 @@ import { type Action } from "../taskReducer";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
+import api from "../../../api";
 
 interface ModalState {
     setOpenModal: Dispatch<React.SetStateAction<boolean>>;
@@ -38,7 +38,7 @@ const Edit = ({ dispatch, setEditModal, id }: ModalState) => {
     const onSubmit = async (data: FormState) => {
         if (!id) return;
         try {
-            await axios.put(`http://localhost:5000/api/editTask/${id}`, { name: data.name });
+            await api.put(`http://localhost:5000/api/editTask/${id}`, { name: data.name });
             dispatch({ type: "EDIT_TASK", payload: { title: data.name, id: id }})
 
             reset();
@@ -51,7 +51,7 @@ const Edit = ({ dispatch, setEditModal, id }: ModalState) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{
             boxShadow: "0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)"
-        }} className="bg-white p-6 rounded-[32px] absolute z-50 flex flex-col gap-6">
+        }} className="bg-white p-6 rounded-[32px] transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 fixed z-50 flex flex-col gap-6">
             <div className="flex flex-col gap-8">
                 <div className="flex justify-between">
                     <div className="bg-[#EEF2FF] rounded-full p-3">

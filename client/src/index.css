@@ -3,3 +3,21 @@
 * {
     font-family: "Plus Jakarta Sans";
 }
+
+.board-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    
+}
+
+@media (min-width: 600px) {
+    .board-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 960px) {
+    .board-grid {
+        grid-template-columns: repeat(3, 1fr);
+        
+    } }
